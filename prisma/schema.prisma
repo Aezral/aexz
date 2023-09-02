@@ -1,0 +1,237 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+    @@index([userId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+model User {
+    id String @id @default(uuid())
+
+    name          String?
+    username String? @unique
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+
+    isUsernameSet Boolean @default(false)
+
+    description String?
+
+    incomingFollowingRequests FollowRequest[] @relation("to")
+    sentFollowingRequests     FollowRequest[] @relation("from")
+
+    likedPosts Like[]
+
+    posts Post[]
+    bookmarks   Bookmark[]
+    replies     Reply[]
+    reports     Report[]
+    reportsMade Report[]   @relation("made")
+
+    following User[] @relation("UserFollows")
+    followers User[] @relation("UserFollows")
+
+    accounts Account[]
+    sessions Session[]
+
+    isModerator Boolean @default(false)
+    isAdmin     Boolean @default(false)
+    isPrivateAccount Boolean @default(false)
+
+    joinedAt DateTime @default(now())
+
+    @@index([email, username])
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model Like {
+    id String @id @default(uuid())
+
+    post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+    user User @relation(fields: [userId], references: [id])
+
+    postId String
+    userId String
+
+    @@index([postId])
+    @@index([userId])
+}
+
+model Bookmark {
+    id String @id @default(uuid())
+
+    post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id])
+
+    postId String
+    userId String
+
+    @@index([postId])
+    @@index([userId])
+}
+
+model Reply {
+    id String @id @default(uuid())
+
+    content String
+
+    post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+    user User @relation(fields: [userId], references: [id])
+
+    childrenReplies Reply[]  @relation("parentReply")
+    reports         Report[]
+
+    parentReply Reply? @relation("parentReply", fields: [parentReplyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+
+    postId        String
+    userId        String
+    parentReplyId String?
+
+    @@index([postId])
+    @@index([userId])
+    @@index([parentReplyId])
+}
+
+enum ReportType {
+    post
+    reply
+    user
+}
+
+model Report {
+    id String @id @default(uuid())
+
+    type ReportType
+
+    madeBy User @relation("made", fields: [madeById], references: [id])
+
+    user  User?  @relation(fields: [userId], references: [id])
+    post  Post?  @relation(fields: [postId], references: [id],  onDelete: Cascade)
+    reply Reply? @relation(fields: [replyId], references: [id])
+
+    madeById String
+
+    userId  String?
+    postId  String?
+    replyId String?
+
+    @@index([userId])
+    @@index([postId])
+    @@index([replyId])
+    @@index([madeById])
+}
+
+model Post {
+    id String @id @default(uuid())
+
+    title String?
+    content String
+
+    likes     Like[]
+    bookmarks Bookmark[]
+    replies   Reply[]
+    reports   Report[]
+
+    tags Tag[]
+
+    originalPostId String?
+
+    author User @relation(fields:[authorId], references:[id])
+
+    creationDate DateTime @default(now())
+
+    authorId String
+
+    @@index([originalPostId])
+    @@index([authorId])
+}
+
+model Tag {
+    id String @id @default(uuid())
+
+    name String @unique
+
+    post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+    postId String
+
+    @@index([postId])
+}
+
+model FollowRequest {
+    id String @id @default(uuid())
+
+    from User @relation("from", fields: [fromUserId], references: [id])
+    to   User @relation("to", fields: [toUserId], references: [id])
+
+    madeAt DateTime @default(now())
+
+    fromUserId String
+    toUserId   String
+
+    @@index([toUserId])
+    @@index([fromUserId])
+}
+
+enum NotificationType {
+    follow
+    followAccept
+    reply
+    report
+}
+
+model Notification {
+    id String @id @default(uuid())
+
+    type NotificationType
+
+    receivedAt DateTime @default(now())
+
+    seen Boolean @default(false)
+}
