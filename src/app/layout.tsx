@@ -14,7 +14,6 @@ const inter = Inter({ subsets: ["cyrillic"] });
 
 export const metadata: Metadata = {
   title: "Aexz",
-  description: "Red social",
 };
 
 export default async function RootLayout({
