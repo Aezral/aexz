@@ -26,7 +26,7 @@ export default function LoginMenu({ providers, callbackUrl }: LoginMenuProps) {
 
     return (
         <>
-            <div className="flex flex-col gap-2">
+            {/* <div className="flex flex-col gap-2">
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email">Continuar con correo</Label>
                     <Input
@@ -58,7 +58,7 @@ export default function LoginMenu({ providers, callbackUrl }: LoginMenuProps) {
                 </Button>
             </div>
 
-            <hr className="my-6" />
+            <hr className="my-6" /> */}
 
             <div className="flex gap-3 flex-col items-">
                 <Button
