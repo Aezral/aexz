@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth";
 
 import { Metadata } from "next";
 
-import ProfilePanel from "../ProfilePanel";
+import ProfilePanel from "../components/ProfilePanel";
 
-import UserNotFound from "../UserNotFound";
+import UserNotFound from "../components/UserNotFound";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 

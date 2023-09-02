@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import PostPanel from "../../../components/shared/PostPanel";
+import PostPanel from "../../../components/shared";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import getServerClient from "@/server/utils/trpc/getServerClient";

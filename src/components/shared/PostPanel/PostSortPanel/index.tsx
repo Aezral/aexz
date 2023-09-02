@@ -14,7 +14,7 @@ interface PostSortPanel {
 
 export default function PostSortPanel({ onChange }: PostSortPanel) {
     return (
-        <Select onValueChange={onChange}>
+        <Select defaultValue="date" onValueChange={onChange}>
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Ordenar por"/>
             </SelectTrigger>

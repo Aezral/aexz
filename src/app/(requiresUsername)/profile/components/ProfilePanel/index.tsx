@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import PostPanel from "@/components/shared/PostPanel";
+import PostPanel from "@/components/shared";
 
 interface ProfilePanelProps {
     asOwn?: boolean;
@@ -18,9 +18,9 @@ interface ProfilePanelProps {
 
 export default function ProfilePanel({
     asOwn,
-    defaultUser, 
+    defaultUser,
     username,
-    defaultPosts
+    defaultPosts,
 }: ProfilePanelProps) {
     const session = useSession();
 
@@ -38,7 +38,8 @@ export default function ProfilePanel({
         }
     );
 
-    const {mutateAsync: setFollowState, isLoading} = trpc.user.setFollowState.useMutation();
+    const { mutateAsync: setFollowState, isLoading } =
+        trpc.user.setFollowState.useMutation();
 
     useEffect(() => {
         if (!data || !session.data?.user) return;
@@ -51,58 +52,75 @@ export default function ProfilePanel({
     }, [data, session]);
 
     return (
-        <div className="h-full pt-16 md:pt-36 max-w-2xl mx-auto overflow-y-auto no-scrollbar">
+        <div className="no-scrollbar mx-auto h-full max-w-2xl overflow-y-auto pt-16 md:pt-36">
             {data && (
                 <>
-                    <div className="flex gap-3 items-center">
+                    <div className="flex items-center gap-3">
                         <Avatar>
                             <AvatarFallback>
                                 {data.username![0].toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
                         <div>
-                            <h1 className="font-bold text-xl">
+                            <h1 className="text-xl font-bold">
                                 {data.name ?? data.username}
                             </h1>
                             <h2 className="font- text-lg">@{data.username}</h2>
                         </div>
                         {!isSameUser &&
                             (data.isFollowing ? (
-                                <Button key="dejar de seguir" onClick={async ()=> {
-                                    await setFollowState({
-                                        username: defaultUser.username as string,
-                                        followState: false
-                                    })
-                                    refetch();
-                                }} variant="outline" className="ml-5 w-[9rem]">
+                                <Button
+                                    key="dejar de seguir"
+                                    onClick={async () => {
+                                        await setFollowState({
+                                            username:
+                                                defaultUser.username as string,
+                                            followState: false,
+                                        });
+                                        refetch();
+                                    }}
+                                    variant="outline"
+                                    className="ml-5 w-[9rem]"
+                                >
                                     Dejar de seguir
                                 </Button>
                             ) : data.hasFollowRequest ? (
-                                <Button  key="cancelar"onClick={async ()=> {
-                                    await setFollowState({
-                                        username: defaultUser.username as string,
-                                        followState: false
-                                    })
-                                    refetch();
-                                }} variant="outline" className="ml-5 w-[18rem]">
+                                <Button
+                                    key="cancelar"
+                                    onClick={async () => {
+                                        await setFollowState({
+                                            username:
+                                                defaultUser.username as string,
+                                            followState: false,
+                                        });
+                                        refetch();
+                                    }}
+                                    variant="outline"
+                                    className="ml-5 w-[18rem]"
+                                >
                                     Cancelar solicitud
                                 </Button>
                             ) : (
-                                <Button key="seguir" onClick={async ()=> {
-                                    await setFollowState({
-                                        username: defaultUser.username as string,
-                                        followState: true
-                                    })
-                                    refetch();
-                                }} className="ml-5 w-[6rem]">
+                                <Button
+                                    key="seguir"
+                                    onClick={async () => {
+                                        await setFollowState({
+                                            username:
+                                                defaultUser.username as string,
+                                            followState: true,
+                                        });
+                                        refetch();
+                                    }}
+                                    className="ml-5 w-[6rem]"
+                                >
                                     Seguir
                                 </Button>
                             ))}
                     </div>
-                    <p className="mb-3 mt-7 ml-12">
+                    <p className="mb-3 ml-12 mt-7">
                         {data.description ?? "Sin descripción"}
                     </p>
-                    <div className="mt-6 mb-3 ml-12 flex gap-6">
+                    <div className="mb-3 ml-12 mt-6 flex gap-6">
                         <div>
                             <span className="font-bold">{data.following}</span>{" "}
                             seguidos
@@ -113,7 +131,11 @@ export default function ProfilePanel({
                         </div>
                     </div>
                     <Separator className="my-6"></Separator>
-                    <PostPanel defaultPosts={defaultPosts} username={data.username!} isProfile></PostPanel>
+                    <PostPanel
+                        defaultPosts={defaultPosts}
+                        username={data.username!}
+                        isProfile
+                    ></PostPanel>
                 </>
             )}
         </div>

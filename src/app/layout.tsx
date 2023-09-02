@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import "./globals.css";
-
+import { ThemeProvider } from 'next-themes'
 import Navbar from "@/components/gui/Navbar";
 import SideNav from "@/components/gui/SideNav";
 import NextAuthProvider from "@/providers/NextAuthProvider";
@@ -9,39 +9,44 @@ import TrpcProvider from "@/providers/TrpcProvider";
 import { Inter } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import { authOptions } from "./api/auth/[...nextauth]/route";
+import CustomThemeProvider from "@/providers/CustomThemeProvider";
+
 const inter = Inter({ subsets: ["cyrillic"] });
 
-
 export const metadata: Metadata = {
-  title: "Aexz",
+    title: "Aexz",
 };
 
 export default async function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions);
 
-  return (
-    <html className="overflow-hidden" lang="es">
-      <body className={inter.className + " "}>
-        <NextAuthProvider session={session}>
-          <TrpcProvider>
-            <div className="h-complete">
-              <Navbar />
-              <div className="container flex h-[calc(100%-4rem)]">
-                <SideNav className="hidden md:flex" />
-                <div className="flex-grow h-full overflow-hidden">
-                  {children}
-                </div>
-              </div>
-            </div>
+    return (
+        <html suppressHydrationWarning className="overflow-hidden" lang="es">
+            <body className={inter.className + " "}>
+                <NextAuthProvider session={session}>
+                    <TrpcProvider>
+                    
+                      <CustomThemeProvider>
+                      <div className="h-complete">
+                            <Navbar />
+                            <div className="container flex h-[calc(100%-4rem)]">
+                                <SideNav className="hidden md:flex" />
+                                <div className="h-full flex-grow overflow-hidden">
+                                    {children}
+                                </div>
+                            </div>
+                        </div>
 
-            <ToastContainer></ToastContainer>
-          </TrpcProvider>
-        </NextAuthProvider>
-      </body>
-    </html>
-  );
+                        <ToastContainer></ToastContainer>
+                      </CustomThemeProvider>
+                   
+                    </TrpcProvider>
+                </NextAuthProvider>
+            </body>
+        </html>
+    );
 }

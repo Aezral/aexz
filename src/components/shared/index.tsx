@@ -7,9 +7,10 @@ import { sortPostBySchema } from "@/validation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import AddPostDialog from "./AddPostDialog";
-import Post from "./Post";
+import AddPostDialog from "./PostPanel/AddPostDialog";
+import Post from "./PostPanel/Post";
 import { cn } from "@/lib/utils";
+import Spinner from "./Spinner";
 
 interface PostPanelProps {
     name?: string;
@@ -39,7 +40,7 @@ export default function PostPanel({
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-        isLoading,
+        isRefetching,
     } = trpc.post.getPosts.useInfiniteQuery(
         {
             sortMethod,
@@ -84,45 +85,45 @@ export default function PostPanel({
                     </h1>
                 )}
                 <div className="flex flex-col  items-center justify-between gap-2 md:flex-row">
-                    <PostSortPanel onChange={setSortMethod} />
+                    <div className="flex items-center gap-2">
+                        <PostSortPanel onChange={setSortMethod} />
+                        <AnimatePresence>
+                            {isRefetching && <Spinner className="ml-2" />}
+                        </AnimatePresence>
+                    </div>
 
                     {showCreate && <AddPostDialog onChange={refetch} />}
                 </div>
             </div>
 
             <div className="flex flex-col gap-5 py-5">
-                {!isLoading ? (
-                    <AnimatePresence mode="popLayout">
-                        {data?.pages.map(page =>
-                            page.posts.map(post => (
-                                <Post
-                                    onChange={refetch}
-                                    key={post.id}
-                                    post={post}
-                                />
-                            ))
-                        )}
-                        {hasNextPage && (
-                            <LoadButtonComponent
-                                layout
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                loading={isFetchingNextPage}
-                                onClick={() => {
-                                    fetchNextPage();
-                                    // setToFetch(v => v+1)
-                                }}
-                                variant="outline"
-                                className="w-[16rem] self-center justify-self-center font-medium"
-                            >
-                                Cargar más publicaciones
-                            </LoadButtonComponent>
-                        )}
-                    </AnimatePresence>
-                ) : (
-                    <div>cargando</div>
-                )}
+                <AnimatePresence initial={false} mode="popLayout">
+                    {data?.pages.map(page =>
+                        page.posts.map(post => (
+                            <Post
+                                onChange={refetch}
+                                key={post.id}
+                                post={post}
+                            />
+                        ))
+                    )}
+                    {hasNextPage && (
+                        <LoadButtonComponent
+                            layout
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            loading={isFetchingNextPage}
+                            onClick={() => {
+                                fetchNextPage();
+                            }}
+                            variant="outline"
+                            className="w-[16rem] self-center justify-self-center font-medium"
+                        >
+                            Cargar más publicaciones
+                        </LoadButtonComponent>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

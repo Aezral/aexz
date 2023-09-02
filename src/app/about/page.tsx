@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { SiNextDotJs } from "@react-icons/all-files/si/SiNextDotJs";
 import { SiTailwindcss } from "@react-icons/all-files/si/SiTailwindcss";
+import { SiGithub } from "@react-icons/all-files/si/SiGithub";
 
 interface TechProps {
     name: string;
@@ -75,7 +76,7 @@ export default function About() {
             color: "text-cyan-800 dark:text-cyan-600",
             icon: (
                 <svg
-                className="h-[1em]"
+                    className="h-[1em]"
                     viewBox="0 0 327 361"
                     version="1.1"
                     xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +130,6 @@ export default function About() {
                 </svg>
             ),
         },
-
     ];
 
     return (
@@ -151,6 +151,13 @@ export default function About() {
                     <Tech {...tech} key={tech.href} />
                 ))}
             </div>
+            <Link
+                target="_blank"
+                className="mt-10 flex gap-1 items-center underline transition-opacity hover:opacity-70"
+                href="https://github.com/Aezral/aexz"
+            >
+                Repositorio de github {" "}<SiGithub />{" "}
+            </Link>
         </div>
     );
 }

@@ -35,14 +35,16 @@ import {
 import { FormGeneralMessage } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Spinner from "../../Spinner";
 
 interface PostProps {
-    post: RouterOutput["post"]["getPosts"]['posts'][number];
+    post: RouterOutput["post"]["getPosts"]["posts"][number];
     onChange: () => unknown | Promise<unknown>;
+    loading?:boolean
 }
 
 const Post = React.forwardRef<HTMLDivElement, PostProps>(
-    ({ post, onChange }, ref) => {
+    ({ post, onChange, loading}, ref) => {
         const session = useSession();
 
         const router = useRouter();
@@ -67,29 +69,27 @@ const Post = React.forwardRef<HTMLDivElement, PostProps>(
 
         return (
             <Component
-                
                 ref={ref}
                 layout
-
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-
-                
                 key={post.id}
             >
-                <div className="flex items-center mt-5 ml-5 mb-5">
+                <div className="mb-5 ml-5 mt-5 flex items-center">
                     <Avatar className="mr-2">
                         <AvatarFallback>
                             {post.author.username![0].toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
                     @
-                    <Link href={`/profile/${post.author.username}`} className="hover:underline mr-2">
+                    <Link
+                        href={`/profile/${post.author.username}`}
+                        className="mr-2 hover:underline"
+                    >
                         {post.author.username}
                     </Link>
-                    •{" "}
-                        {formatDate(post.creationDate)}
+                    • {formatDate(post.creationDate)}
                 </div>
                 {post.title && (
                     <CardHeader className="-mt-5">
@@ -100,7 +100,7 @@ const Post = React.forwardRef<HTMLDivElement, PostProps>(
                     <p className="truncate">{post.content}</p>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    <div>
+                    <div className="flex items-center">
                         <Button
                             className="mr-0"
                             variant="ghost"
@@ -122,7 +122,9 @@ const Post = React.forwardRef<HTMLDivElement, PostProps>(
                                 }
                             }}
                         >
-                            {post.isLiked ? (
+                            {isLikeLoading ? (
+                                <Spinner />
+                            ) : post.isLiked ? (
                                 <IconThumbUpFilled className="text-primary" />
                             ) : (
                                 <IconThumbUp></IconThumbUp>
@@ -152,15 +154,19 @@ const Post = React.forwardRef<HTMLDivElement, PostProps>(
                                     }
                                 }}
                             >
-                                {!post.isBookmarked ? (
-                                    <IconBookmark  />
+                                {isBookmarkLoading ? (
+                                    <Spinner />
+                                ) : !post.isBookmarked ? (
+                                    <IconBookmark />
                                 ) : (
                                     <IconBookmarkFilled className="text-primary" />
                                 )}
                             </Button>
                         )}
+                        {/* {!loading && <Spinner className="inline" />} */}
+                        
                     </div>
-
+                    
                     {session.data?.user?.username != null &&
                         session.data?.user?.username ===
                             post.author.username && (

@@ -7,42 +7,60 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuTrigger
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-    Sheet,
-    SheetContent,
-    SheetTrigger
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { IconMenu2 } from "@tabler/icons-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import SideNav from "../SideNav";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 // import {MdPerson} from 'react-icons/md'
 export default function Navbar() {
     const session = useSession();
-
+    const { theme, setTheme } = useTheme()
+    const [mounted, setMounted] = useState(false);
+    useEffect(()=>{
+        setMounted(true)
+    },[])
     return (
-        <div className="border-b h-16">
-            <div className="flex h-16 items-center px-4 container">
+        <div className="h-16 border-b">
+            <div className="container flex h-16 items-center px-4">
                 <Link
                     href="/home"
-                    className="h-full mr-6 flex justify-center items-center"
+                    className="mr-6 flex h-full items-center justify-center"
                 >
-                    <span className="text-xl font-extrabold ml-2">Aexz</span>
+                    <span className="ml-2 text-xl font-extrabold">Aexz</span>
                 </Link>
-                <Sheet >
+                <Sheet>
                     <SheetTrigger asChild>
                         <Button className="md:hidden" variant={"outline"}>
                             <IconMenu2 size="1rem" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left">
-                       <SideNav className="h-full"></SideNav>
+                        <SideNav className="h-full"></SideNav>
                     </SheetContent>
                 </Sheet>
 
-                <div className="justify-end flex flex-1">
+                <div className="flex flex-1 justify-end gap-2">
+                    {mounted &&  <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                         
+                            <Button variant="outline">
+                                Tema {" " + (theme === 'light' ? "claro" : theme === "system" ? "del sistema" : "oscuro")}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuLabel >Tema</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={()=>{setTheme("light")}}>Claro</DropdownMenuItem>
+                            <DropdownMenuItem onClick={()=>{setTheme("dark")}}>Oscuro</DropdownMenuItem>
+                            <DropdownMenuItem onClick={()=>{setTheme("system")}}>Sistema</DropdownMenuItem>
+                            
+                        </DropdownMenuContent>
+                    </DropdownMenu>}
                     {session.data?.user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

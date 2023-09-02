@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { ServerComponentRequest } from "@/server/types";
 import { getProviders } from "next-auth/react";
-import LoginMenu from "./LoginMenu";
+import LoginMenu from "./components/LoginMenu";
 
 export default async function Login({ searchParams }: ServerComponentRequest) {
     const providers = await getProviders();
