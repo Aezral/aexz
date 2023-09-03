@@ -91,6 +91,10 @@ export const postRouter = router({
                     };
                 }
 
+                if(username){
+                    where.author!.username = username
+                }
+
                 if (user) {
                     where.author!.OR = [
                         {
@@ -105,9 +109,7 @@ export const postRouter = router({
                         },
                     ];
                 } else {
-                    where.author! = {
-                        isPrivateAccount: false
-                    }
+                    where.author!.isPrivateAccount = false
                 }
 
           

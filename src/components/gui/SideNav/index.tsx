@@ -20,11 +20,13 @@ interface SideElement {
     href: string | string[];
     icon?: LucideIcon;
     active?: boolean;
+    close?: ()=> unknown
 }
 
-function SideElement({ name, href, icon: Icon, active = false }: SideElement) {
+function SideElement({ name, href, icon: Icon, active = false, close}: SideElement) {
     return (
         <Link
+        onClick={close}
             href={typeof href === "string" ? href : href[0]}
             className={cn("text-xl text-black/30 dark:text-white/30 font-medium flex", {
                 "text-black dark:text-white": active,
@@ -38,9 +40,10 @@ function SideElement({ name, href, icon: Icon, active = false }: SideElement) {
 
 interface SideNavProps  {
     className?: string   
+    close?: ()=> unknown
 }
 
-export default function SideNav({className}: SideNavProps) {
+export default function SideNav({className, close}: SideNavProps) {
     const session = useSession();
 
     enum AuthRequired {
@@ -131,6 +134,7 @@ export default function SideNav({className}: SideNavProps) {
 
                 return (
                     <SideElement
+                    close={close}
                         active={
                             typeof element.href == "string"
                                 ? pathname === element.href

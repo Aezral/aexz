@@ -16,14 +16,21 @@ import Link from "next/link";
 import SideNav from "../SideNav";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+
+import {FaMoon} from '@react-icons/all-files/fa/FaMoon'
+import {RiComputerFill} from '@react-icons/all-files/ri/RiComputerFill'
+import {BiSun} from '@react-icons/all-files/bi/BiSun'
 // import {MdPerson} from 'react-icons/md'
 export default function Navbar() {
     const session = useSession();
-    const { theme, setTheme } = useTheme()
+    const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
-    useEffect(()=>{
-        setMounted(true)
-    },[])
+
+    const [isNavOpen, setIsNavOpen] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
     return (
         <div className="h-16 border-b">
             <div className="container flex h-16 items-center px-4">
@@ -33,34 +40,57 @@ export default function Navbar() {
                 >
                     <span className="ml-2 text-xl font-extrabold">Aexz</span>
                 </Link>
-                <Sheet>
+                <Sheet open={isNavOpen} onOpenChange={setIsNavOpen}>
                     <SheetTrigger asChild>
                         <Button className="md:hidden" variant={"outline"}>
                             <IconMenu2 size="1rem" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left">
-                        <SideNav className="h-full"></SideNav>
+                        <SideNav close={()=> {setIsNavOpen(false)}} className="h-full"></SideNav>
                     </SheetContent>
                 </Sheet>
 
                 <div className="flex flex-1 justify-end gap-2">
-                    {mounted &&  <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                         
-                            <Button variant="outline">
-                                Tema {" " + (theme === 'light' ? "claro" : theme === "system" ? "del sistema" : "oscuro")}
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuLabel >Tema</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={()=>{setTheme("light")}}>Claro</DropdownMenuItem>
-                            <DropdownMenuItem onClick={()=>{setTheme("dark")}}>Oscuro</DropdownMenuItem>
-                            <DropdownMenuItem onClick={()=>{setTheme("system")}}>Sistema</DropdownMenuItem>
-                            
-                        </DropdownMenuContent>
-                    </DropdownMenu>}
+                    {mounted && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline">
+                                    {theme === "light"
+                                        ? <BiSun  />
+                                        : theme === "system"
+                                        ? <RiComputerFill/>
+                                        : <FaMoon/>}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuLabel>Tema</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        setTheme("light");
+                                    }}
+                                >
+                                    Claro
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        setTheme("dark");
+                                    }}
+                                >
+                                    Oscuro
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setTheme("system");
+                                    }}
+                                >
+                                    Sistema
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                     {session.data?.user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
