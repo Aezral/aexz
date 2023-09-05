@@ -1,5 +1,5 @@
 "use client";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -40,11 +40,11 @@ import Spinner from "../../Spinner";
 interface PostProps {
     post: RouterOutput["post"]["getPosts"]["posts"][number];
     onChange: () => unknown | Promise<unknown>;
-    loading?:boolean
+    loading?: boolean;
 }
 
 const Post = React.forwardRef<HTMLDivElement, PostProps>(
-    ({ post, onChange, loading}, ref) => {
+    ({ post, onChange, loading }, ref) => {
         const session = useSession();
 
         const router = useRouter();
@@ -78,18 +78,35 @@ const Post = React.forwardRef<HTMLDivElement, PostProps>(
             >
                 <div className="mb-5 ml-5 mt-5 flex items-center">
                     <Avatar className="mr-2">
+                        <AvatarImage
+                            src={post.author.image ?? undefined}
+                            alt="Vista previa"
+                        ></AvatarImage>
                         <AvatarFallback>
-                            {post.author.username![0].toUpperCase()}
+                            {post.author.name
+                                ? post.author.name[0].toUpperCase()
+                                : post.author.username
+                                ? post.author.username[0].toUpperCase()
+                                : ""}
                         </AvatarFallback>
                     </Avatar>
-                    @
                     <Link
                         href={`/profile/${post.author.username}`}
-                        className="mr-2 hover:underline"
+                        className="mr-2"
                     >
-                        {post.author.username}
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            {post.author.name && (
+                                <span className="mr-1 font-bold">
+                                    {post.author.name}
+                                </span>
+                            )}
+                            <span className="md:text-sm ml-1">
+                                {" "}
+                                @{post.author.username}
+                            </span>
+                        </div>
                     </Link>
-                    • {formatDate(post.creationDate)}
+                   <div className="ml-auto mr-5 opacity-75">{formatDate(post.creationDate)}</div>
                 </div>
                 {post.title && (
                     <CardHeader className="-mt-5">
@@ -164,9 +181,8 @@ const Post = React.forwardRef<HTMLDivElement, PostProps>(
                             </Button>
                         )}
                         {/* {!loading && <Spinner className="inline" />} */}
-                        
                     </div>
-                    
+
                     {session.data?.user?.username != null &&
                         session.data?.user?.username ===
                             post.author.username && (

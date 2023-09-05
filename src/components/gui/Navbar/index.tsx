@@ -95,8 +95,8 @@ export default function Navbar() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline">
-                                    {session.data?.user?.username ??
-                                        session.data.user.name ??
+                                    {session.data.user.name ??
+                                        session.data.user.username ??
                                         session.data.user.email}
                                 </Button>
                             </DropdownMenuTrigger>

@@ -86,7 +86,7 @@ export default function SideNav({className, close}: SideNavProps) {
         },
         {
             name: "Configuración",
-            href: "/settings",
+            href: ["/settings", "/settings/user"],
             icon: Settings,
             auth: AuthRequired.required,
         },

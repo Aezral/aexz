@@ -75,6 +75,10 @@ model User {
     isAdmin     Boolean @default(false)
     isPrivateAccount Boolean @default(false)
 
+    sendFollowNotifications Boolean @default(true)
+    sendLikeNotifications Boolean @default(true)
+    
+
     joinedAt DateTime @default(now())
 
     @@index([email, username])

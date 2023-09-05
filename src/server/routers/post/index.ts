@@ -129,6 +129,8 @@ export const postRouter = router({
                         author: {
                             select: {
                                 username: true,
+                                name:true,
+                                image:true
                             },
                         },
                         content: true,

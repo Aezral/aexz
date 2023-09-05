@@ -75,75 +75,74 @@ export default function AddPostDialog({ onChange }: AddPostDialogProps) {
             }
         }
     }
+    return (
+        <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialogTrigger asChild>
+                <Button disabled={!session.data?.user}>Crear publicación </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Nueva publicación </AlertDialogTitle>
+                    <FormGeneralMessage
+                        error={form.formState.errors.root?.message}
+                    />
+                    {/* <AlertDialogDescription>
+                This action cannot be undone. This will permanently
+                delete your account and remove your data from our
+                servers.
+            </AlertDialogDescription> */}
+                </AlertDialogHeader>
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-2"
+                    >
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Título (opcional)</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
 
-    if (session.data?.user)
-        return (
-            <AlertDialog open={open} onOpenChange={setOpen}>
-                <AlertDialogTrigger asChild>
-                    <Button>Crear publicación </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Nueva publicación </AlertDialogTitle>
-                        <FormGeneralMessage
-                            error={form.formState.errors.root?.message}
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                        {/* <AlertDialogDescription>
-                    This action cannot be undone. This will permanently
-                    delete your account and remove your data from our
-                    servers.
-                </AlertDialogDescription> */}
-                    </AlertDialogHeader>
-                    <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-2"
-                        >
-                            <FormField
-                                control={form.control}
-                                name="title"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Título (opcional)</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
+                        <FormField
+                            control={form.control}
+                            name="content"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Contenido</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            className="min-h-[6rem] resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
 
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="content"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Contenido</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                className="min-h-[6rem] resize-none"
-                                                {...field}
-                                            />
-                                        </FormControl>
-
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </form>
-                    </Form>
-                    <TagForm onChange={setTags} />
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <Button
-                            className="w-[8rem]"
-                            loading={isLoading}
-                            onClick={form.handleSubmit(onSubmit)}
-                        >
-                            Publicar
-                        </Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        );
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </form>
+                </Form>
+                <TagForm onChange={setTags} />
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <Button
+                        className="w-[8rem]"
+                        loading={isLoading}
+                        onClick={form.handleSubmit(onSubmit)}
+                    >
+                        Publicar
+                    </Button>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+     
 }

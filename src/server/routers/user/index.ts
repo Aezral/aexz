@@ -1,3 +1,4 @@
+
 import { db } from "@/server/utils/db";
 import {
     loggedProcedure,
@@ -5,15 +6,23 @@ import {
     publicProcedure,
     router,
 } from "@/server/utils/trpc";
-import { usernameSchema } from "@/validation";
+import {
+    userAvatarURLSchema,
+    userDescriptionSchema,
+    userNameSchema,
+} from "@/server/validation";
+import { userUsernameSchema } from "@/server/validation";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import removeQueryParams from "@/server/utils/removeQueryParams";
+import validateImageURL from "@/server/utils/validateImageURL";
+import {sanitize} from 'dompurify'
 
 export const userRouter = router({
     setUsername: loggedProcedureNoUsername
         .input(
             z.object({
-                username: usernameSchema,
+                username: userUsernameSchema,
             })
         )
         .mutation(async ({ ctx: { user }, input: { username } }) => {
@@ -59,7 +68,7 @@ export const userRouter = router({
             })
         )
         .query(async ({ input: { username }, ctx: { user } }) => {
-            const response = await usernameSchema
+            const response = await userUsernameSchema
                 .optional()
                 .safeParseAsync(username);
 
@@ -82,6 +91,7 @@ export const userRouter = router({
                         isPrivateAccount: true,
                         joinedAt: true,
                         name: true,
+                        image:true
                     },
                 }),
                 db.user.count({
@@ -102,16 +112,14 @@ export const userRouter = router({
                         },
                     },
                 }),
-            ])
+            ]);
 
             if (!foundUser) {
                 return null;
             }
 
-       
-
             const isFollowing =
-                (!user || (user.username === username))
+                !user || user.username === username
                     ? null
                     : await db.user.findFirst({
                           where: {
@@ -127,10 +135,8 @@ export const userRouter = router({
                           },
                       });
 
-            
-
             const isFollower =
-                (!user || (foundUser.username === username))
+                !user || foundUser.username === username
                     ? null
                     : await db.user.findFirst({
                           where: {
@@ -146,10 +152,8 @@ export const userRouter = router({
                           },
                       });
 
-            
-
             const hasFollowRequest =
-                (!user || foundUser.username === username)
+                !user || foundUser.username === username
                     ? null
                     : await db.followRequest.findFirst({
                           where: {
@@ -163,7 +167,6 @@ export const userRouter = router({
                           },
                       });
 
-    
             return {
                 ...foundUser,
                 following,
@@ -184,7 +187,7 @@ export const userRouter = router({
         .mutation(
             async ({ input: { username, followState }, ctx: { user } }) => {
                 try {
-                    usernameSchema.parse(username);
+                    userUsernameSchema.parse(username);
                 } catch {
                     throw new TRPCError({
                         code: "NOT_FOUND",
@@ -296,6 +299,77 @@ export const userRouter = router({
                         }
                     }
                 }
+            }
+        ),
+    getConfigurationData: router({
+        user: loggedProcedure.query(async ({ ctx: { user } }) => {
+            const data = await db.user.findUnique({
+                where: {
+                    id: user.id,
+                },
+                select: {
+                    name: true,
+                    description: true,
+                    isPrivateAccount: true,
+                    image: true,
+                    username:true
+                },
+            });
+
+            return data!;
+        }),
+    }),
+    setConfigurationData: loggedProcedure
+        .input(
+            z.object({
+                name: userNameSchema.optional(),
+                description: userDescriptionSchema.optional(),
+                isPrivateAccount: z.boolean().optional(),
+                avatarURL: userAvatarURLSchema.optional(),
+            })
+        )
+        .mutation(
+            async ({
+                ctx: { user },
+                input: { name, description, isPrivateAccount, avatarURL },
+            }) => {
+                let data: Parameters<typeof db.user.update>[0]["data"] = {};
+                // TODO: terminar procedimiento
+
+                if (name != null) {
+                    data.name = name.length === 0 ? null : name;
+                }
+
+                if (description != null) {
+                    data.description =
+                        description.length === 0 ? null : description;
+                }
+
+                if (isPrivateAccount != null) {
+                    data.isPrivateAccount = isPrivateAccount;
+                }
+                console.log(avatarURL)
+                if (avatarURL != null) {
+                  
+                    if(avatarURL.length !== 0){
+                        if(!validateImageURL(avatarURL)) throw new TRPCError({
+                            message:"URL de imagen inválida",
+                            code:"BAD_REQUEST"
+                        })
+                        data.image = sanitize(avatarURL)
+                    } else{
+                        data.image = null
+                    }
+
+                    
+                }
+
+                await db.user.update({
+                    where: {
+                        id: user.id,
+                    },
+                    data,
+                });
             }
         ),
 });

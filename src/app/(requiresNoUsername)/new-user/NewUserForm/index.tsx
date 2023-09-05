@@ -14,7 +14,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { trpc } from "@/lib/utils/trpc";
-import { usernameSchema } from "@/validation";
+import { userUsernameSchema } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
@@ -26,7 +26,7 @@ interface NewUserFormProps {
 }
 
 const inputSchema = z.object({
-    username: usernameSchema,
+    username: userUsernameSchema,
 });
 
 export default function NewUserForm({ callbackUrl }: NewUserFormProps) {
@@ -53,7 +53,7 @@ export default function NewUserForm({ callbackUrl }: NewUserFormProps) {
                 username,
             });
 
-            window.location.reload()
+            window.location.reload();
         } catch (err) {
             if (err instanceof TRPCClientError) {
                 form.setError("username", {
@@ -84,9 +84,7 @@ export default function NewUserForm({ callbackUrl }: NewUserFormProps) {
                             <FormDescription>
                                 No podrás cambiar esto después
                             </FormDescription>
-                            <FormMessage>
-                               
-                            </FormMessage>
+                            <FormMessage></FormMessage>
                         </FormItem>
                     )}
                 />

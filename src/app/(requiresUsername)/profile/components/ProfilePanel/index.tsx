@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RouterOutput, trpc } from "@/lib/utils/trpc";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
@@ -57,8 +57,16 @@ export default function ProfilePanel({
                 <>
                     <div className="flex items-center gap-3">
                         <Avatar>
+                            <AvatarImage
+                                src={data?.image ?? undefined}
+                                alt="Vista previa"
+                            ></AvatarImage>
                             <AvatarFallback>
-                                {data.username![0].toUpperCase()}
+                                {data?.name
+                                    ? data.name[0].toUpperCase()
+                                    : data?.username
+                                    ? data.username[0].toUpperCase()
+                                    : ""}
                             </AvatarFallback>
                         </Avatar>
                         <div>
